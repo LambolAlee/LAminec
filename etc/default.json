@@ -1,0 +1,10 @@
+{
+    "auto_gen":true,
+    "mcpath":".",
+    "minecraft":{
+        "assets_index":"",
+        "assets_obj":"",
+        "libpath":"",
+        "versiondir":""
+    }
+}
