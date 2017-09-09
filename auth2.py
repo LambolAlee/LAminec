@@ -18,12 +18,12 @@ def make_requests(endpoint, data):
     return req
 
 def check_if_failed(req):
-    if res.status_code == requests.codes['ok'] or res.status_code == 204:
+    if req.status_code == requests.codes['ok'] or req.status_code == 204:
         return None
     anerror = YggdrassilError(status_code=req.status_code)
     req_json = req.json()
     if 'error' in req_json and 'errorMessage' in req_json:
-        message = "[Kaniol {status_code}] {error}: '{error_message}'"
+        message = "[Kaniol.{status_code}] {error}: '{error_message}'"
         message = message.format(status_code=str(req.status_code),
                                  error=req_json["error"],
                                  error_message=req_json["errorMessage"])
@@ -43,7 +43,7 @@ class YggdrassilError(Exception):
         self.status_code = status_code
 
 class ClientTokenNotMatchedError(Exception):
-    pass
+    pass 
 
 
 class Auth2:
@@ -68,16 +68,11 @@ class Auth2:
         resp = AttrDict(req.json())
         self.username = username
         self.access_token = resp.accessToken
-        if client_token != resp.clientToken:
-            msg = "The client you given[{client}] != [{get_client}]"
-            msg.format(client=client_token, get_client=resp.clientToken)
-            raise ClientTokenNotMatchedError(msg)
-        else:
-            self.client_token = resp.clientToken
+        self.client_token = resp.clientToken
         try:
             profile = AttrDict(resp.selectedProfile)
             twitch = AttrDict(resp.user)
-        except KeyError:
+        except AttributeError:
             self.prof = Profile(profile, None)
         else:
             self.prof = Profile(profile, twitch)
@@ -115,6 +110,6 @@ class Auth2:
 
     def sign_out(self, username, password):
         req = make_requests('signout',
-            {"username":self.username,
+            {"username":username,
              "password":password})
         return True
