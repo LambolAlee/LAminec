@@ -14,10 +14,11 @@ Profile = namedtuple("Profile", 'profile, twitch')
 def make_requests(endpoint, data):
     req = requests.post(AUTH_SERVER + endpoint, json.dumps(data), 
         headers=HEADERS, timeout=20)
+    check_if_failed(req)
     return req
 
 def check_if_failed(req):
-    if res.status_code == requests.codes['ok']:
+    if res.status_code == requests.codes['ok'] or res.status_code == 204:
         return None
     anerror = YggdrassilError(status_code=req.status_code)
     req_json = req.json()
@@ -64,7 +65,6 @@ class Auth2:
                     "requestUser": self.twitch
                   }
         req = make_requests('authenticate', payload)
-        check_if_failed(req)
         resp = AttrDict(req.json())
         self.username = username
         self.access_token = resp.accessToken
@@ -83,10 +83,38 @@ class Auth2:
             self.prof = Profile(profile, twitch)
         return True
 
-    def refresh(self):pass
+    def refresh(self):
+        req = make_requests('refresh', 
+            {"accessToken":self.access_token,
+            "clientToken":self.client_token})
+        resp = AttrDict(req.json())
+        self.access_token = resp.accessToken
+        self.client_token = resp.clientToken
+        return True
 
-    def validate(self):pass
+    def validate(self):
+        try:
+            req = make_requests('validate', 
+                {"accessToken":self.access_token,
+                "clientToken":self.client_token})
+        except YggdrassilError:
+            return False
+        else:
+            return True
 
-    def invalidate(self):pass
 
-    def sign_out(self):pass
+    def invalidate(self):
+        try:
+            req = make_requests('invalidate', 
+                {"accessToken":self.access_token,
+                "clientToken":self.client_token})
+        except YggdrassilError:
+            return False
+        else:
+            return True
+
+    def sign_out(self, username, password):
+        req = make_requests('signout',
+            {"username":self.username,
+             "password":password})
+        return True
