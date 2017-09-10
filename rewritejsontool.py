@@ -6,12 +6,13 @@ from itertools import chain
 from shutil import rmtree
 from os import walk, remove
 from string import Template
-from os import name as sysname
 from contextlib import contextmanager
+from platform import system
+#from os import name as sysname
 
 
-platform = {'nt':'windows', 'posix':'linux', 'osx':'osx'}
-nativekey = "natives-{}".format(platform[sysname])
+#platform = {'nt':'windows', 'posix':'linux', 'osx':'osx'}
+nativekey = "natives-{}".format(system().lower())
 #namelist = [('libraries', initlib), ('assetIndex', None), ('downloads', None),
 #            ('mainClass', None), ('minecraftArguments', None)]
 
