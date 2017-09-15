@@ -22,8 +22,9 @@ class Profile(UserDict):
         self.data_file = data_file
 
     @backup
-    def save(self):
+    def save(self, name, uid, gversion, token="", mode='Legacy'):
         print("Saving profile lab.json ...")
+        self.savelastUser(name, uid, gversion, token="", mode='Legacy')
         with open(self.data_file, 'w') as f:
             dump(self.data, f)
         return True
@@ -35,6 +36,12 @@ class Profile(UserDict):
         else:
             lastUser = lastUser.split('+')
             return True, lastUser
+
+    def savelastUser(self, name, uid, gversion, token="", mode='Legacy'):
+        lastUser = '+'.join((mode, name, uid, token, gversion))
+        self["lastUser"] = lastUser
+        return
+
 
 def makeProfile(adir, javapath, rootpath, gamepath):
     INNER = {
