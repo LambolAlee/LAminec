@@ -2,7 +2,10 @@ import requests
 import json, sys
 from attrdict import AttrDict
 from collections import namedtuple
+from .exceptions import YggdrassilError
 
+
+__all__ = ["Auth2", "AUTH_SERVER", "CONTENT_TYPE", "HEADERS"]
 
 #: The base url for Yggdrassil requests
 AUTH_SERVER = "https://authserver.mojang.com/"
@@ -31,19 +34,6 @@ def check_if_failed(req):
         anerror.error = req_json["error"]
         anerror.errormsg = req_json["errorMessage"]
         raise anerror
-
-class YggdrassilError(Exception):
-    error = None
-    errormsg = None
-    status_code = None
-    def __init__(self, error=None, errormsg=None, status_code=None):
-        super(YggdrassilError, self).__init__(errormsg)
-        self.error = error
-        self.errormsg = errormsg
-        self.status_code = status_code
-
-class ClientTokenNotMatchedError(Exception):
-    pass 
 
 
 class Auth2:
