@@ -105,3 +105,4 @@ tests/
 LAB*
 tmp/
 Test*
+.idea/
