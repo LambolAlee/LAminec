@@ -1,3 +1,5 @@
+from .jsontool
+
 class Event:
     CONFIGINIT = "config_init"
     GAMESTART = "game_start"
@@ -19,3 +21,11 @@ class CompositeEvents:
     
     def __iter__(self):
         return iter(self.children)
+
+
+class Handler:
+    def __init__(self, args):
+        self.args = args
+
+    def handle_game_start(self):
+        

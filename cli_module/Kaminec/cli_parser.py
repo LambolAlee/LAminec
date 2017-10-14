@@ -1,48 +1,30 @@
 import argparse
-from status import Event, CompositeEvents
+from .status import Event, CompositeEvents
 
 
 class BasicAction(argparse.Action):
+    _field = None
     def __init__(self, option_strings, dest, **kwargs):
         super(BasicAction, self).__init__(option_strings, dest, **kwargs)
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, values)
+        if hasattr(namespace, "kinds"):
+            namespace.kinds.add(Event(self._field))
+        else:
+            kinds = CompositeEvents(Event(self._field))
+            setattr(namespace, "kinds", kinds)
 
 class ConfigAction(BasicAction):
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, values)
-        if hasattr(namespace, "kinds"):
-            namespace.kinds.add(Event("config_init"))
-        else:
-            kinds = CompositeEvents(Event("config_init"))
-            setattr(namespace, "kinds", kinds)
+    _field = "config_init"
 
 class GameStartAction(BasicAction):
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, values)
-        if hasattr(namespace, "kinds"):
-            namespace.kinds.add(Event("game_start"))
-        else:
-            kinds = CompositeEvents(Event("game_start"))
-            setattr(namespace, "kinds", kinds)
+    _field = "game_start"
 
 class DownloadAction(BasicAction):
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, values)
-        if hasattr(namespace, "kinds"):
-            namespace.kinds.add(Event("download"))
-        else:
-            kinds = CompositeEvents(Event("download"))
-            setattr(namespace, "kinds", kinds)
+    _field = "download"
 
 class ScriptAction(BasicAction):
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, values)
-        if hasattr(namespace, "kinds"):
-            namespace.kinds.add(Event("script"))
-        else:
-            kinds = CompositeEvents(Event("script"))
-            setattr(namespace, "kinds", kinds)
+    _field = "script"
 
 
 def initparser():
