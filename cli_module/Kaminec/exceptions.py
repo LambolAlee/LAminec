@@ -16,3 +16,6 @@ class YggdrassilError(Exception):
 
 class ClientTokenNotMatchedError(Exception):
     pass
+
+class MojangInformationLackError(Exception):
+    pass
