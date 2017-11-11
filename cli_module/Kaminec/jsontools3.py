@@ -23,12 +23,12 @@ native_names = 1
 class GameJsonManager:
     def __init__(self, fjson):
         self.fjson = fjson
-        with open(self.fjson) as f:
+        with open(self.fjson, encoding="utf-8") as f:
             self.data = load(f)
         if "inheritsFrom" in self.data:
             self.inheritsFrom_json = self.fjson.replace(
                 self.data["id"], self.data["inheritsFrom"])
-            with open(self.inheritsFrom_json) as f:
+            with open(self.inheritsFrom_json, encoding="utf-8") as f:
                 self.vanilla_data = load(f)
     
     def vanillaParse(self, vanilla_libs):
@@ -126,7 +126,7 @@ class GameJsonHandler:
         paths += gamejar
         return paths
 
-    def getMcArgs(self, Legacy=True, uuid=None, accessToken=None):
+    def getMcArgs(self, Legacy=True, mojanginfo=None):
         if self.forge_data is None:
             args = self.data["minecraftArguments"]
             version = self.data["id"]
@@ -136,18 +136,20 @@ class GameJsonHandler:
         if Legacy:
             accessToken = uuid = self.conf["uuid"]
             user_type = "Legacy"
+            auth_player_name = self.conf["auth_player_name"]
         else:
-            if uuid is None or accessToken is None:
+            if mojanginfo is None:
                 raise MojangInformationLackError(
                     "[Kaniol] The game cant start because of the lack of your mojang information!")
             else:
-                user_type = "mojang"       
-        args = args.replace("${auth_player_name}", self.conf["auth_player_name"])\
+                user_type = "mojang"
+                auth_player_name = mojanginfo.auth_player_name       
+        args = args.replace("${auth_player_name}", auth_player_name)\
                    .replace("${version_name}", version)\
                    .replace("${game_directory}", self.conf["game_directory"])\
                    .replace("${assets_root}", self.conf["assets_root"])\
-                   .replace("${auth_uuid}", uuid)\
-                   .replace("${auth_access_token}", accessToken)\
+                   .replace("${auth_uuid}", mojanginfo.uuid)\
+                   .replace("${auth_access_token}", mojanginfo.accessToken)\
                    .replace("${user_type}", user_type)\
                    .replace("${version_type}", "\"LAminec R1 1.0.0.0\"")
         return args

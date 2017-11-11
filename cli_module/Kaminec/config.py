@@ -7,13 +7,12 @@ from os.path import basename, splitext
 class Config(collections.UserDict):
     def __init__(self, user_json):
         self.user_json = user_json
-        self.username = splitext(user_json)[0]
-        with open(user_json) as f:
+        with open(user_json, encoding="utf-8") as f:
             self.data = json.load(f)
             self._rollback = dict(self.data)
 
     def save(self):
-        with open(self.user_json, 'w') as f:
+        with open(self.user_json, mode='w', encoding="utf-8") as f:
             try:
                 json.dump(self.data, f)
             except OSError:
@@ -22,3 +21,8 @@ class Config(collections.UserDict):
                 return "RollBack"
             else:
                 return "SaveDone"
+
+    def __repr__(self):
+        return "Config({})".format(self.user_json)
+
+    __str__ = __repr__
