@@ -95,7 +95,7 @@ class GameJsonHandler:
 
     def getLibs(self):
         paths = ""
-        addParentPath = lambda path:join(self.conf.libpath, path)
+        addParentPath = lambda path:join(self.conf["libpath"], path)
         
         def extractme(native_path):
             """Extracting the native libraries which are in need of starting Minecraft"""
@@ -134,7 +134,7 @@ class GameJsonHandler:
             args = self.forge_data["minecraftArguments"]
             version = self.forge_data["id"]
         if Legacy:
-            accessToken = uuid = self.conf.uuid
+            accessToken = uuid = self.conf["uuid"]
             user_type = "Legacy"
         else:
             if uuid is None or accessToken is None:
@@ -142,10 +142,10 @@ class GameJsonHandler:
                     "[Kaniol] The game cant start because of the lack of your mojang information!")
             else:
                 user_type = "mojang"       
-        args = args.replace("${auth_player_name}", self.conf.auth_player_name)\
+        args = args.replace("${auth_player_name}", self.conf["auth_player_name"])\
                    .replace("${version_name}", version)\
-                   .replace("${game_directory}", self.conf.game_directory)\
-                   .replace("${assets_root}", self.conf.assets_root)\
+                   .replace("${game_directory}", self.conf["game_directory"])\
+                   .replace("${assets_root}", self.conf["assets_root"])\
                    .replace("${auth_uuid}", uuid)\
                    .replace("${auth_access_token}", accessToken)\
                    .replace("${user_type}", user_type)\
@@ -182,17 +182,17 @@ class GameJsonHandler:
 
     def getLibUrls(self):
         tasks = []
-        libpath = self.conf.libpath
+        libpath = self.conf["libpath"]
         lib_task = namedtuple("lib_task", ['path', 'url', 'sha1'])
         urlform = "{prefix}{urlpart}"
         for (path, sha1) in self.liblists.vanilla:
-            url = urlform.format(prefix=self.conf.libprefix, urlpart=path)
+            url = urlform.format(prefix=self.conf["libprefix"], urlpart=path)
             path = join(libpath, path)
             tasks.append(lib_task(path, url, sha1))
         if self.liblist.forge is not None:
             for path in self.liblist.forge:
                 #the forge website is waited to be proved
-                url = urlform.format(prefix=self.conf.libprefix, urlpart=path)
+                url = urlform.format(prefix=self.conf["libprefix"], urlpart=path)
                 path = join(libpath, path)
                 tasks.append(lib_task(path, url, None))
         return tasks
@@ -200,10 +200,10 @@ class GameJsonHandler:
     def getAssetsIndexUrls(self):
         index_task = namedtuple('index_task', ['indexes', 'objects', 'id', 'path', 'url', 'sha1'])
         return index_task(
-                self.conf.asset_index_dir, 
-                self.conf.asset_obj_dir,
+                self.conf["asset_index_dir"], 
+                self.conf["asset_obj_dir"],
                 self.data["assets"],
-                join(self.conf.assets_index_dir, self.data["assets"] + ".json"),
+                join(self.conf["assets_index_dir"], self.data["assets"] + ".json"),
                 self.data["assetIndex"]["url"],
                 self.data["assetIndex"]["sha1"])
 
@@ -213,7 +213,7 @@ class GameJsonHandler:
             version = self.data["id"]
         else:
             version = self.forge_data["id"]
-        versiondir = self.conf.versiondir
+        versiondir = self.conf["versiondir"]
         clientpath = join(versiondir, version+'.jar')
         client_task = maingame_task(clientpath, 
                                 self.data["downloads"]["client"]["url"],
