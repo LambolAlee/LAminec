@@ -14,5 +14,7 @@ class Promotions(abc.ABCMeta):
     def version(self):pass
 
 
-class MCPromot113(Promotions):
-    '''promotion to minecraft 1.13 and later.'''
+class MCPromotNormal(Promotions):
+    '''promotion to minecraft 1.12.2 and earlier.'''
+    def initLibs(self, lib_data):
+        
