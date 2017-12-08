@@ -1,5 +1,6 @@
 import json
 
+
 class VanillaJsonManager:
     def __init__(self, data_path, promot):
         '''Init the Vanilla json data and select the useful parts out of raw data'''
@@ -20,11 +21,13 @@ class VanillaJsonManager:
         self.mcargs = self.promot.initMcArgs(self.data.get("minecraftArguments", self.data["arguments"]["game"]))
 
     def initStartCode(self):
-        self.startcode_template = self.promot.initStartCode(self.data.get("arguments"))
+        self.startcode_template = self.promot.initStartCode()
 
     def initOtherGameInfo(self):
         self.version_name = self.data["id"]
         self.assets_name = self.data["assets"]
+        self.mainClass = self.data["mainClass"]
+        self.launcherversion = self.data["minimumLauncherVersion"]
 
 
 class ForgeJsonManager(VanillaJsonManager):
@@ -46,12 +49,13 @@ class ForgeJsonManager(VanillaJsonManager):
         '''making the class properties fit in forge version'''
         self.mcargs = self.forge_data["minecraftArguments"]
         self.version_name = self.forge_data["id"]
+        self.mainClass = self.forge_data["mainClass"]
         self.lib_list.extand(self.promot.initLibs(self.forge_data["libraries"]))
 
 
 def GameJsonManager(data_path, promot, game_type="vanilla"):
     '''this is a factory function to instantial the VanillaJsonManager or ForgeJsonManager'''
-    if not game_type in ["vanilla", "forge"]:
+    if not game_type in ("vanilla", "forge"):
         raise TypeError("[Kaniol] This game type is invalid.")
     else:
         return exec("{0}JsonManager({1}, {2})".format(game_type.capitalize(), data_path, promot))
