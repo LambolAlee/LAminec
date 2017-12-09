@@ -24,6 +24,7 @@ class VanillaJsonManager:
         self.startcode_template = self.promot.initStartCode()
 
     def initOtherGameInfo(self):
+        self.gamejar = vanilla_data_path.replace(".json", ".jar")
         self.version_name = self.data["id"]
         self.assets_name = self.data["assets"]
         self.mainClass = self.data["mainClass"]
@@ -43,11 +44,12 @@ class ForgeJsonManager(VanillaJsonManager):
         '''process the inheriting relationship'''
         parent_data_path = data_path.replace(self.forge_data["id"], self.forge_data["inheritsFrom"])
         super(ForgeJsonManager, self).__init__(parent_data_path, promot)
+        self.gamejar = parent_data_path.replace(".json", ".jar")
         self.fitProperties()
 
     def fitProperties(self):
         '''making the class properties fit in forge version'''
-        self.mcargs = self.forge_data["minecraftArguments"]
+        self.mcargs = self.promot.initMcArgs(self.forge_data["minecraftArguments"])
         self.version_name = self.forge_data["id"]
         self.mainClass = self.forge_data["mainClass"]
         self.lib_list.extand(self.promot.initLibs(self.forge_data["libraries"]))
