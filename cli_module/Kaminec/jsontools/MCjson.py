@@ -52,7 +52,7 @@ class ForgeJsonManager(VanillaJsonManager):
         self.mcargs = self.promot.initMcArgs(self.forge_data["minecraftArguments"])
         self.version_name = self.forge_data["id"]
         self.mainClass = self.forge_data["mainClass"]
-        self.lib_list.extand(self.promot.initLibs(self.forge_data["libraries"]))
+        self.lib_list.extend(self.promot.initForgeLibs(self.forge_data["libraries"]))
 
 
 def GameJsonManager(data_path, promot, game_type="vanilla"):

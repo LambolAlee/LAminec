@@ -4,7 +4,6 @@ from collections import namedtuple
 
 from .system import Rule, getStartCodeTemplate, NATIVEKEY
 
-
 ORDLIBFORM = "{0}/{1}/{2}/{1}-{2}.jar"
 NATIVELIBFORM = "{0}/{1}/{2}/{1}-{2}-{3}.jar"
 
@@ -27,6 +26,9 @@ class Promotions(abc.ABCMeta):
 
 class MCPromotNormal(Promotions):
     '''promotion to minecraft 1.12.2 and earlier.'''
+    def __init__(self, version):
+        self.version = version
+
     @property
     def version(self):
         return self._version
@@ -64,14 +66,17 @@ class MCPromotNormal(Promotions):
             lib = ORDLIBFORM.format(package.replace('.', '/'), name, version)
             sha1 = alib["downloads"]["artifact"]["sha1"]
         try:
-            rule = Rule(alib["rules"])
+            allow = Rule(alib["rules"]).allow
         except KeyError:
-            rule = None
-        return (lib, sha1, which_list, rule.allow)
+            allow = True
+        return (lib, sha1, which_list, allow)
 
 
 class MCPromotForge(MCPromotNormal):
-    def initLibs(self, lib_data):
+    def __init__(self, version):
+        super(MCPromotForge, self).__init__(version)
+
+    def initForgeLibs(self, forge_lib_data):
         forge_list = []
         for forge_lib in lib_data:
             package, name, version = alib.split(':')
