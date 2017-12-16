@@ -1,4 +1,4 @@
-from .jsontool
+#from .jsontool
 
 class Event:
     CONFIGINIT = "config_init"
@@ -28,4 +28,4 @@ class Handler:
         self.args = args
 
     def handle_game_start(self):
-        
+        pass

@@ -24,7 +24,7 @@ def conf_init_handler(successor=None):
 def start_game_handler(successor=None):
     while True:
         event, handler = yield
-        if event.kind = Event.GAMESTART:
+        if event.kind == Event.GAMESTART:
             handler.handle_game_start()
         elif successor is not None:
             successor.send(event, handler)

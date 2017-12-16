@@ -15,16 +15,16 @@ class VanillaJsonManager:
         self.initStartCode()
     #Initial methods defined here
     def initLibs(self):
-        self.lib_list, self.native_list = self.promot.initLibs(self.data["libraries"])
+        self.native_list, self.lib_list = self.promot.initLibs(self.data["libraries"])
 
     def initMcArgs(self):
-        self.mcargs = self.promot.initMcArgs(self.data.get("minecraftArguments", self.data["arguments"]["game"]))
-
+        self.mcargs = self.promot.initMcArgs(self.data["minecraftArguments"])
+#       self.data["arguments"]["game"])
     def initStartCode(self):
         self.startcode_template = self.promot.initStartCode()
 
     def initOtherGameInfo(self):
-        self.gamejar = vanilla_data_path.replace(".json", ".jar")
+        self.gamejar = self.vanilla_data_path.replace(".json", ".jar")
         self.version_name = self.data["id"]
         self.assets_name = self.data["assets"]
         self.mainClass = self.data["mainClass"]
@@ -42,7 +42,8 @@ class ForgeJsonManager(VanillaJsonManager):
 
     def inherit(self, data_path, promot):
         '''process the inheriting relationship'''
-        parent_data_path = data_path.replace(self.forge_data["id"], self.forge_data["inheritsFrom"])
+        parent_data_path = "{vanilla}.json".format(
+            vanilla=self.forge_data["inheritsFrom"])
         super(ForgeJsonManager, self).__init__(parent_data_path, promot)
         self.gamejar = parent_data_path.replace(".json", ".jar")
         self.fitProperties()
@@ -60,4 +61,4 @@ def GameJsonManager(data_path, promot, game_type="vanilla"):
     if not game_type in ("vanilla", "forge"):
         raise TypeError("[Kaniol] This game type is invalid.")
     else:
-        return exec("{0}JsonManager({1}, {2})".format(game_type.capitalize(), data_path, promot))
+        return eval("{0}JsonManager".format(game_type.capitalize()))(data_path, promot)
