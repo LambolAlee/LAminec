@@ -3,4 +3,5 @@ class LanePromotionDefault:
         self.initPaths()
 
     def initPaths(self):
-        self.libpath = "F:\\mine_for_test\\.minecraft\\libraries"
+        self.libdir = "F:\\mine_for_test\\.minecraft\\libraries"
+        self.nativedir = "C:\\Users\\Administrator\\Desktop\\tmp\\natives"

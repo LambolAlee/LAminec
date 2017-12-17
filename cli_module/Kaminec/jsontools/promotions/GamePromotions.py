@@ -26,6 +26,7 @@ class MCPromotNormal:
             *tuplelib, which_list, allow = self.parseSingleLib(alib, package, name, version, 
                 NATIVEKEY if "extract" in alib else None)
             if not allow:
+#                print(alib["name"])
                 continue
             else:
                 libs[which_list].append(tuplelib)
@@ -41,7 +42,7 @@ class MCPromotNormal:
     def parseSingleLib(alib, package, name, version, native_key=None):
         if not native_key is None:
             which_list = "native_list"
-            lib = NATIVELIBFORM.format(native_key, package.replace('.', '/'), name, version)
+            lib = NATIVELIBFORM.format(package.replace('.', '/'), name, version, native_key)
             sha1 = alib["downloads"]["classifiers"][native_key]["sha1"]
         else:
             which_list = "lib_list"

@@ -1,5 +1,8 @@
 import re
 import platform as pf
+from shutil import rmtree
+from os import walk, remove
+from os.path import join
 from .promotions.LanePromotions import LanePromotionDefault
 
 
@@ -20,13 +23,15 @@ SYSVERSION = pf.version()
 
 NATIVEKEY = "natives-{}".format(SYSNAME)
 
-JAVA_PATH = ""
+JAVA_PATH = "D:\\Program Files\\jre1.8\\bin\\javaw.exe"
 
 STARTCODETEMPLATE = """
     ${javaw_path} ${jvm_args} ${extra_jvm_args}
     -Djava.library.path=${natives_directory} 
     -Dminecraft.launcher.brand=${launcher_name}
     -cp ${classpath} ${mainClass} ${game_args} ${extra_game_args}"""
+
+EXTRA_JVM_SAMPLE = "-XX:+UseG1GC -XX:-UseAdaptiveSizePolicy -XX:-OmitStackTraceInFastThrow -Xmn128m -Xmx1024m"
 
 def getLane(self, conf_file=None, lane_promotion=LanePromotionDefault):
     return lane_promotion(conf_file)
@@ -37,6 +42,14 @@ def getStartCodeTemplate():
     jvm_args = SYSLIST[pf.system()][1]
     return STARTCODETEMPLATE.replace(
         "${jvm_args}", jvm_args)
+
+def removeNativeDir(native_dir):
+    try:
+        for root, dirs, files in walk(native_dir):
+            for f in files:
+                remove(join(root, f))
+        rmtree(self.native_dir)
+    except:pass
 
 
 class Rule:
@@ -60,14 +73,15 @@ class Rule:
 
     def assertAllow(self, each_rule):
         try:
-            allow = (self.sysname == each_rule["os"])
+            allow = (self.sysname == each_rule["os"]["name"])
+        except KeyError:
+            allow = True
+        if not allow:
+            return allow
+        try:
+            pattern = each_rule["os"]["version"]
         except KeyError:
             allow = True
         else:
-            try:
-                pattern = each_rule["os"]["version"]
-            except KeyError:
-                allow = True
-            else:
-                allow = re.match(pattern, self.sysversion) if pattern else True
+            allow = re.match(pattern, self.sysversion) if pattern else True
         return allow
