@@ -11,7 +11,6 @@ addParentPath = lambda parent_path, child_path: join(parent_path, child_path)
 
 class Game:
     def __init__(self, 
-        
         data_path, 
         game_type="vanilla", 
         conf_file=None,
@@ -22,9 +21,13 @@ class Game:
         self.data_path = data_path
         self.game_version = splitext(basename(data_path))[0]
         self.lane = getLane(conf_file, lane_promot)
+        self.nativedir = self.initNativeDir()
         self.data_parser = GameJsonManager(
             data_path, game_promot(self.game_version), game_type=game_type)
         self.prepared = False
+
+    def initNativeDir(self):
+        return self.lane.initNativeDir()
 
     def getLibPath(self):
         self.getNativesExtracted()
@@ -76,10 +79,10 @@ class Game:
 
     def start(self):
         if not prepared:
-            raise RuntimeError("[Kaniol] Please run getStartCode(...) first!")
-        with Popen(cmd, stdout=PIPE, stderr=STDOUT):
+            raise RuntimeError("[Kaniol] Please run getStartCode(...) and initNativeDir() first!")
+        with Popen(cmd, stdout=PIPE, stderr=STDOUT) as proc:
             print("***LAMINEC R1 1.0.0.0***")
             print("[Lambol] successfully launching the game...")
-            print("[Kaniol] native directory is ", self.lane.nativedir)
-        removeNativeDir(self.lane.native_dir)
-        return
+            print("[Kaniol] native directory is ", self.nativedir)
+            print("*"*80, proc.stdout.read(), sep='\n')
+        removeNativeDir(self, self.nativedir)

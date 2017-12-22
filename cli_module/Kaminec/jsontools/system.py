@@ -43,13 +43,14 @@ def getStartCodeTemplate():
     return STARTCODETEMPLATE.replace(
         "${jvm_args}", jvm_args)
 
-def removeNativeDir(native_dir):
+def removeNativeDir(obj, native_dir):
     try:
         for root, dirs, files in walk(native_dir):
             for f in files:
                 remove(join(root, f))
-        rmtree(self.native_dir)
+        rmtree(native_dir)
     except:pass
+    obj.prepared = False
 
 
 class Rule:
