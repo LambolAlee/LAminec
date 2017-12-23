@@ -52,15 +52,15 @@ class Game:
 
     def getMcArgs(self, auth_box):
         mcargs = self.data_parser.mcargs.substitute(
-            auth_player_name=auth_box.username,
+            auth_player_name=auth_box["name"],
             version_name="\"LaminecR1 1.0.0.0\"",
             game_directory=self.lane.minecraftdir,
             assets_root=self.lane.assets_root,
             asssets_index_name=self.data_parser.assets_name,
-            uuid=auth_box.uuid, auth_access_token=auth_box.token,
-            user_type=auth_box.user_type,
-            user_properties=auth_box.user_properties,
-            auth_session=auth_box.uuid
+            uuid=auth_box["id"], auth_access_token=auth_box["accessToken"],
+            user_type=auth_box["user_type"],
+            user_properties=auth_box["user_properties"],
+            auth_session=auth_box["id"]
             version_type=self.data_parser.version_name
         )
         return mcargs

@@ -30,9 +30,8 @@ def check_if_successded(req):
 
 
 class Auth2Mc:
-    def __init__(self, auth_box, client_token):
+    def __init__(self, auth_box):
         self.auth_box = auth_box
-        self.client_token = client_token
 
     def login(self, password):
         payload = {
@@ -40,27 +39,27 @@ class Auth2Mc:
                 "name": "Minecraft",
                 "version": 1
             },
-            "username": self.auth_box.username,
+            "username": self.auth_box["email"],
             "password": password,
-            "client_token": self.client_token,
-            "requestUser": self.auth_box.twitch
+            "client_accessToken": self.auth_box["clientToken"],
+            "requestUser": self.auth_box["twitch"]
         }
         req, res = make_requests('authenticate', payload)
-        self.auth_box.update(req.json()["selectedProfile"])
+        self.auth_box.update(selectedProfile=req.json()["selectedProfile"])
         return (True if res else False)
 
     def refresh(self):
         req, res = make_requests('refresh',
-                            {"accessToken": self.auth_box.token,
-                             "clientToken": self.client_token})
+                            {"accessToken": self.auth_box["accessToken"],
+                             "clientToken": self.auth_box["clientToken"]})
         self.auth_box.update(req.json())
         return (True if res else False)
 
     def validate(self):
         try:
             req, _ = make_requests('validate',
-                                {"accessToken": self.auth_box.token,
-                                 "clientToken": self.client_token})
+                                {"accessToken": self.auth_box["accessToken"],
+                                 "clientToken": self.auth_box["clientToken"]})
         except YggdrassilError:
             return False
         else:
@@ -69,8 +68,8 @@ class Auth2Mc:
     def invalidate(self):
         try:
             req, _ = make_requests('invalidate',
-                                {"accessToken": self.auth_box.token,
-                                 "clientToken": self.client_token})
+                                {"accessToken": self.auth_box["accessToken"],
+                                 "clientToken": self.auth_box["clientToken"]})
         except YggdrassilError:
             return False
         else:
@@ -79,7 +78,7 @@ class Auth2Mc:
     def sign_out(self, password):
         try:
             req, _ = make_requests('signout',
-                                {"username": self.auth_box.username,
+                                {"username": self.auth_box["email"],
                                  "password": password})
         except YggdrassilError:
             return False
