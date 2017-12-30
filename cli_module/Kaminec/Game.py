@@ -60,7 +60,7 @@ class Game:
             uuid=auth_box["id"], auth_access_token=auth_box["accessToken"],
             user_type=auth_box["user_type"],
             user_properties=auth_box["user_properties"],
-            auth_session=auth_box["id"]
+            auth_session=auth_box["id"],
             version_type=self.data_parser.version_name
         )
         return mcargs
