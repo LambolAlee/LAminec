@@ -1,54 +1,24 @@
-import functools
-from .status import Event
+from zipfile import ZipFile
+from os.path import join
+from collections import namedtuple
 
-def coroutine(function):
-    @functools.wraps(function)
-    def wrapper(*args, **kwargs):
-        generator = function(*args, **kwargs)
-        next(generator)
-        return generator
-    return wrapper
 
-@coroutine
-def conf_init_handler(successor=None):
-    while True:
-        event, handler = yield
-        if event.kind == Event.CONFINIT:
-            handler.handle_conf_init()
-        elif successor is not None:
-            successor.send(event, handler)
-        else:
-            print("[Kaniol.Warning] config file init failed")
+tasks = {"lib_task": namedtuple("lib_task", ['path', 'url', 'sha1']),
+         "index_task": namedtuple(
+            'index_task', ['indexes', 'objects', 'id', 'path', 'url', 'sha1']),
+         "maingame_task": namedtuple("maingame_task", ['path', 'url', 'sha1']),
+         "obj_task": namedtuple("obj_task", ['path', 'url', 'hash'])}
 
-@coroutine
-def start_game_handler(successor=None):
-    while True:
-        event, handler = yield
-        if event.kind == Event.GAMESTART:
-            handler.handle_game_start()
-        elif successor is not None:
-            successor.send(event, handler)
-        else:
-            print("[Kaniol.Warning] start game failed")
 
-@coroutine
-def download_handler(successor=None):
-     while True:
-        event, handler = yield
-        if event.kind = Event.DOWNLOAD:
-            handler.handle_download()
-        elif successor is not None:
-            successor.send(event, handler)
-        else:
-            print("[Kaniol.Warning] download failed")
+def extractMe(native_path, nativedir):
+    try:
+        zipf = ZipFile(native_path, mode='r')
+    except FileNotFoundError:
+        print("not found %s" % native_path)
+    else:
+        for i in (k for k in zipf.namelist() if "META-INF" not in k):
+            zipf.extract(i, nativedir)
 
-@coroutine
-def script_handler(successor=None):
-     while True:
-        event, handler = yield
-        if event.kind = Event.SCRIPT:
-            handler.handle_script()
-        elif successor is not None:
-            successor.send(event, handler)
-        else:
-            print("[Kaniol.Warning] run script failed")
+
+def addParentPath(parent_path, child_path): return join(
+    parent_path, child_path)
