@@ -1,4 +1,4 @@
-import system
+from .system import SYSNAME, SYSVERSION
 
 
 class Rule:
