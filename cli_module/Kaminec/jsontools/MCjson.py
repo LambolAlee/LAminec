@@ -15,7 +15,7 @@ class VanillaJsonManager:
         self.initStartCode()
     #Initial methods defined here
     def initLibs(self):
-        self.native_list, self.lib_list = self.promot.initLibs(self.data["libraries"])
+        self.lib_comp = self.promot.initLibs(self.data["libraries"])
 
     def initMcArgs(self):
         self.mcargs = self.promot.initMcArgs(self.data["minecraftArguments"])

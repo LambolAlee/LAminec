@@ -32,10 +32,38 @@ class LibItem:
 
 class CompLibItem(UserList):
     def __init__(self, *items, *, conf, include_native=False):
-        self.extend(*items, conf=conf, include_native=include_native)
+        self.conf = conf
+        self.include_native = include_native
+        if items:
+            self.extend(*items)
 
-    def extend(self, first, *items, *, conf, include_native=False):
-        if include_native: 
-            self.extend(i.init(conf) for i in chain((first, ), items) if not i.allow)
+    def extend(self, first, *items):
+        if self.include_native: 
+            self.data.extend(i.init(self.conf) for i in chain((first, ), items) if i.allow)
         else:
-            self.data.extend(i.init(conf) for i in chain((first, ), items))
+            self.data.extend(i.init(self.conf) for i in chain((first, ), items))
+
+    def append(self, first):
+        if self.include_native:
+            self.data.append(first.init(self.conf) if i.allow)
+        else:
+            self.data.append(first.init(self.conf))
+
+    def _applyForEachItem(self, key):
+        def wrapperedParser(*args):
+            return [getattr(i, key)(*args) for i in self]
+        return wrapperedParser
+
+    def __getattribute__(self, key):
+        return self._applyForEachItem(key)
+
+
+def make_single_item(single_lib):
+    return LibItem(single_lib)
+
+
+def make_comp_items(liblist, conf, include_native=False):
+    comp_items = CompLibItem(conf=conf, include_native=include_native)
+    for i in liblist:
+        comp_items.append(make_single_item(i))
+    return comp_items

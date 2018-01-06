@@ -1,6 +1,6 @@
 from string import Template
 from collections import namedtuple
-
+from ..LibItem import make_comp_items
 from ..system import Rule, getStartCodeTemplate, NATIVEKEY
 
 ORDLIBFORM = "{0}/{1}/{2}/{1}-{2}.jar"
@@ -19,18 +19,8 @@ class MCPromotNormal:
     def version(self, version):
         self._version = version
 
-    def initLibs(self, lib_data):
-        libs = {"lib_list":[], "native_list":[]}
-        for alib in lib_data:
-            package, name, version = alib["name"].split(':')
-            *tuplelib, which_list, allow = self.parseSingleLib(alib, package, name, version, 
-                NATIVEKEY if "extract" in alib else None)
-            if not allow:
-#                print(alib["name"])
-                continue
-            else:
-                libs[which_list].append(tuplelib)
-        return libs["native_list"], libs["lib_list"]
+    def initLibs(self, lib_data, conf, include_native=False):
+        return make_comp_items(lib_data, conf=conf, include_native=include_native)
 
     def initMcArgs(self, args_data):
         return Template(args_data)
@@ -38,27 +28,12 @@ class MCPromotNormal:
     def initStartCode(self):
         return Template(getStartCodeTemplate())
 
-    @staticmethod
-    def parseSingleLib(alib, package, name, version, native_key=None):
-        if not native_key is None:
-            which_list = "native_list"
-            lib = NATIVELIBFORM.format(package.replace('.', '/'), name, version, native_key)
-            sha1 = alib["downloads"]["classifiers"][native_key]["sha1"]
-        else:
-            which_list = "lib_list"
-            lib = ORDLIBFORM.format(package.replace('.', '/'), name, version)
-            sha1 = alib["downloads"]["artifact"]["sha1"]
-        try:
-            allow = Rule(alib["rules"]).allow
-        except KeyError:
-            allow = True
-        return (lib, sha1, which_list, allow)
-
 
 class MCPromotForge(MCPromotNormal):
     def __init__(self, version):
         super(MCPromotForge, self).__init__(version)
 
+    #sign:change it into the form which is the same as initlib
     def initForgeLibs(self, forge_lib_data):
         forge_list = []
         for forge_lib in forge_lib_data:

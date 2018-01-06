@@ -30,25 +30,7 @@ class Game:
         return self.lane.initNativeDir()
 
     def getLibPath(self):
-        self.getNativesExtracted()
-        libpath = []
-        libpath.extend(addParentPath(self.lane.libdir, each_lib)
-            for each_lib, _ in self.data_parser.lib_list)
-        libpath.append(self.data_parser.gamejar)
-        return libpath
-
-    def getNativesExtracted(self):
-        def extractMe(native_path):
-            try:
-                zipf = ZipFile(native_path, mode='r')
-            except FileNotFoundError:
-                print("not found %s" % native_path)
-                pass
-            else:
-                for i in (k for k in zipf.namelist() if "META-INF" not in k):
-                    zipf.extract(i, self.lane.nativedir)
-        for each_native, _ in self.data_parser.native_list:
-            extractMe(addParentPath(self.lane.libdir, each_native))
+        return self.data_parser.lib_comp.parsePath()
 
     def getMcArgs(self, auth_box):
         mcargs = self.data_parser.mcargs.substitute(
