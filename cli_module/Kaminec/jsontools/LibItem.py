@@ -1,7 +1,8 @@
 from itertools import chain
 from functools import partial
 from collections import UserList
-from .system import Rule, NATIVEKEY
+from .Rule import Rule
+from .system import NATIVEKEY
 from .promotions.ParsePromotion import parseAllLibs
 from .promotions.ParsePromotion import CommonLibParser, NativeLibParser
 
